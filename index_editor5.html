@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo cáo Network Tab</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      padding: 2rem;
+    }
+
+    h1 { font-size: 1.5rem; margin-bottom: 0.4rem; }
+    .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+
+    /* ===== SUMMARY CARDS ===== */
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .stat {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat .label { font-size: 0.75rem; color: #888; margin-bottom: 4px; }
+    .stat .value { font-size: 1.5rem; font-weight: bold; color: #2d3748; }
+    .stat .unit  { font-size: 0.7rem; color: #aaa; }
+
+    /* ===== FILTER BUTTONS ===== */
+    .filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .filter-btn {
+      padding: 4px 14px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover { border-color: #3182ce; color: #3182ce; }
+    .filter-btn.active { background: #3182ce; color: white; border-color: #3182ce; }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+
+    thead tr { background: #f7fafc; }
+
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #718096;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th:hover { color: #3182ce; }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7fafc; }
+
+    /* Tên file */
+    .file-name { font-weight: 500; color: #2d3748; }
+    .file-path { font-size: 0.75rem; color: #a0aec0; font-family: monospace; }
+
+    /* Badge loại tài nguyên */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: bold;
+      font-family: monospace;
+    }
+
+    .badge-document  { background: #ebf8ff; color: #2b6cb0; }
+    .badge-stylesheet{ background: #e9d8fd; color: #553c9a; }
+    .badge-script    { background: #fffff0; color: #744210; }
+    .badge-image     { background: #f0fff4; color: #276749; }
+    .badge-font      { background: #feebc8; color: #7b341e; }
+    .badge-fetch     { background: #fed7d7; color: #822727; }
+
+    /* Status */
+    .status {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    .status-200 { background: #48bb78; }
+    .status-301 { background: #ecc94b; }
+    .status-304 { background: #63b3ed; }
+    .status-404 { background: #fc8181; }
+
+    .status-text { font-size: 0.82rem; }
+
+    /* Size bar */
+    .size-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .size-bar-bg { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; min-width: 60px; }
+    .size-bar    { height: 6px; border-radius: 3px; background: #3182ce; }
+    .size-val    { font-size: 0.8rem; color: #4a5568; white-space: nowrap; min-width: 50px; text-align: right; }
+
+    /* Time */
+    .time-val { font-family: monospace; font-size: 0.82rem; color: #4a5568; }
+
+    /* Requester / Responder */
+    .actor { font-size: 0.82rem; }
+    .actor-req { color: #2b6cb0; }
+    .actor-res { color: #276749; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 2rem; color: #a0aec0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <h1>📡 Báo cáo Network Tab</h1>
+  <p class="subtitle">Ghi chép tài nguyên được tải khi mở trang — tên, loại, ai gửi yêu cầu, ai trả phản hồi</p>
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <div class="stat">
+      <div class="label">Tổng yêu cầu</div>
+      <div class="value" id="total-req">8</div>
+      <div class="unit">requests</div>
+    </div>
+    <div class="stat">
+      <div class="label">Tổng dung lượng</div>
+      <div class="value">142</div>
+      <div class="unit">KB</div>
+    </div>
+    <div class="stat">
+      <div class="label">Thời gian tải</div>
+      <div class="value">1.24</div>
+      <div class="unit">giây</div>
+    </div>
+    <div class="stat">
+      <div class="label">Thành công</div>
+      <div class="value" style="color:#48bb78">6</div>
+      <div class="unit">/ 8 requests</div>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterType('all',this)">Tất cả (8)</button>
+    <button class="filter-btn" onclick="filterType('document',this)">Document</button>
+    <button class="filter-btn" onclick="filterType('stylesheet',this)">CSS</button>
+    <button class="filter-btn" onclick="filterType('script',this)">JS</button>
+    <button class="filter-btn" onclick="filterType('image',this)">Image</button>
+    <button class="filter-btn" onclick="filterType('font',this)">Font</button>
+    <button class="filter-btn" onclick="filterType('fetch',this)">Fetch/XHR</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table id="net-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Tên tài nguyên</th>
+          <th>Loại</th>
+          <th>Người gửi yêu cầu (Initiator)</th>
+          <th>Người trả phản hồi (Server)</th>
+          <th>Trạng thái</th>
+          <th>Dung lượng</th>
+          <th>Thời gian</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Row được render bằng JS -->
+      </tbody>
+    </table>
+    <div class="empty" id="empty-msg" style="display:none">Không có tài nguyên nào thuộc loại này.</div>
+  </div>
+
+  <script>
+    const rows = [
+      { name:'index.html',   path:'/',                   type:'document',   req:'Browser (address bar)', res:'Web Server (Apache/Nginx)', status:200, size:12,  time:120 },
+      { name:'style.css',    path:'/css/style.css',      type:'stylesheet', req:'index.html &lt;link&gt;', res:'Web Server',              status:200, size:28,  time:85  },
+      { name:'main.js',      path:'/js/main.js',         type:'script',     req:'index.html &lt;script&gt;',res:'Web Server',             status:200, size:34,  time:95  },
+      { name:'logo.png',     path:'/img/logo.png',       type:'image',      req:'index.html &lt;img&gt;',  res:'Web Server',              status:200, size:42,  time:210 },
+      { name:'banner.webp',  path:'/img/banner.webp',    type:'image',      req:'style.css background',  res:'Web Server',              status:304, size:0,   time:18  },
+      { name:'Roboto.woff2', path:'/fonts/Roboto.woff2', type:'font',       req:'style.css @font-face',  res:'Google Fonts CDN',        status:200, size:18,  time:340 },
+      { name:'api/data.json',path:'/api/data.json',      type:'fetch',      req:'main.js fetch()',       res:'API Server (Node.js)',    status:200, size:8,   time:185 },
+      { name:'404.png',      path:'/img/missing.png',    type:'image',      req:'index.html &lt;img&gt;',  res:'Web Server',              status:404, size:0,   time:22  },
+    ];
+
+    const maxSize = Math.max(...rows.map(r => r.size));
+
+    const statusColor = { 200:'status-200', 301:'status-301', 304:'status-304', 404:'status-404' };
+    const statusLabel = { 200:'200 OK', 301:'301 Redirect', 304:'304 Not Modified', 404:'404 Not Found' };
+
+    function render(data) {
+      const tbody = document.getElementById('table-body');
+      const empty = document.getElementById('empty-msg');
+      if (!data.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+      empty.style.display='none';
+      tbody.innerHTML = data.map((r,i) => `
+        <tr data-type="${r.type}">
+          <td style="color:#a0aec0;font-size:0.8rem">${i+1}</td>
+          <td>
+            <div class="file-name">${r.name}</div>
+            <div class="file-path">${r.path}</div>
+          </td>
+          <td><span class="badge badge-${r.type}">${r.type}</span></td>
+          <td><span class="actor actor-req">${r.req}</span></td>
+          <td><span class="actor actor-res">${r.res}</span></td>
+          <td>
+            <span class="status ${statusColor[r.status]}"></span>
+            <span class="status-text">${statusLabel[r.status]}</span>
+          </td>
+          <td>
+            <div class="size-bar-wrap">
+              <div class="size-bar-bg"><div class="size-bar" style="width:${maxSize?Math.round(r.size/maxSize*100):0}%"></div></div>
+              <span class="size-val">${r.size ? r.size+' KB' : '(cache)'}</span>
+            </div>
+          </td>
+          <td><span class="time-val">${r.time} ms</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function filterType(type, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render(type === 'all' ? rows : rows.filter(r => r.type === type));
+    }
+
+    render(rows);
+  </script>
+
+</body>
+</html>
