@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo cáo Network Tab</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    h1 { margin-bottom: 0.5rem; }
+    p  { color: #666; margin-bottom: 1.5rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { background: #f0f0f0; padding: 8px 12px; text-align: left; border: 1px solid #ddd; }
+    td { padding: 8px 12px; border: 1px solid #ddd; }
+    tr:nth-child(even) { background: #fafafa; }
+  </style>
+</head>
+<body>
+
+  <h1>Báo cáo Network Tab</h1>
+  <p>Ghi chép tài nguyên tải khi mở trang — tên, loại, ai gửi yêu cầu, ai trả phản hồi.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Tên tài nguyên</th>
+        <th>Loại</th>
+        <th>Ai gửi yêu cầu (Initiator)</th>
+        <th>Ai trả phản hồi (Server)</th>
+        <th>Trạng thái</th>
+        <th>Dung lượng</th>
+        <th>Thời gian</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>index.html</td>
+        <td>document</td>
+        <td>Browser (address bar)</td>
+        <td>Web Server (Nginx)</td>
+        <td>200 OK</td>
+        <td>12 KB</td>
+        <td>120 ms</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>style.css</td>
+        <td>stylesheet</td>
+        <td>index.html &lt;link&gt;</td>
+        <td>Web Server</td>
+        <td>200 OK</td>
+        <td>28 KB</td>
+        <td>85 ms</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>main.js</td>
+        <td>script</td>
+        <td>index.html &lt;script&gt;</td>
+        <td>Web Server</td>
+        <td>200 OK</td>
+        <td>34 KB</td>
+        <td>95 ms</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>logo.png</td>
+        <td>image</td>
+        <td>index.html &lt;img&gt;</td>
+        <td>Web Server</td>
+        <td>200 OK</td>
+        <td>42 KB</td>
+        <td>210 ms</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Roboto.woff2</td>
+        <td>font</td>
+        <td>style.css @font-face</td>
+        <td>Google Fonts CDN</td>
+        <td>200 OK</td>
+        <td>18 KB</td>
+        <td>340 ms</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>api/data.json</td>
+        <td>fetch</td>
+        <td>main.js fetch()</td>
+        <td>API Server (Node.js)</td>
+        <td>200 OK</td>
+        <td>8 KB</td>
+        <td>185 ms</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
